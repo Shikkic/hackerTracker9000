@@ -18,7 +18,7 @@ program
   .parse(process.argv); 
 
 // Create Cron Job
-var job = new CronJob('00 13 1 * * 0-6', function() {
+var job = new CronJob('00 00 21 * * 0-6', function() {
     ghScrape.scrape("https://github.com/shikkic", function(userStats) {
         var currentStreak = userStats.currentStreak,
             longestStreak = userStats.longestStreak;
