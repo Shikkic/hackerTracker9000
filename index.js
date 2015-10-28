@@ -17,11 +17,8 @@ program
   .option('-n, --number [12345..]', 'recieveing phone number')
   .parse(process.argv); 
 
-console.log(program.number);
-console.log(twilio_number);
-
 // Create Cron Job
-var job = new CronJob('00 6 1 * * 0-6', function() {
+var job = new CronJob('00 13 1 * * 0-6', function() {
     ghScrape.scrape("https://github.com/shikkic", function(userStats) {
         var currentStreak = userStats.currentStreak,
             longestStreak = userStats.longestStreak;
