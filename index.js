@@ -15,11 +15,12 @@ var client = new twilio.RestClient(account_sid, auth_token);
 program
   .version('0.0.1')
   .option('-n, --number [12345..]', 'recieveing phone number')
+  .option('-u, --username [exp: Shikkic]', 'Github username')
   .parse(process.argv); 
 
 // Create Cron Job
 var job = new CronJob('00 00 21 * * 0-6', function() {
-    ghScrape.scrape("https://github.com/shikkic", function(userStats) {
+    ghScrape.scrape("https://github.com/"+program.username, function(userStats) {
         var currentStreak = userStats.currentStreak,
             longestStreak = userStats.longestStreak;
         var textBody = currentStreak ? "Awesome job today your current streak is "+currentStreak+". Keep up the good work, make some more commits! Beat your record of "+longestStreak : "Oh no! You're current streak today is 0, make a commit today you lazy shit! Your highest streak record is only "+longestStreak;
