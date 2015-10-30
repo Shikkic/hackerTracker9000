@@ -1,31 +1,57 @@
-// Setup depend
+/*
+/////////////////////////////
+// Initialize Dependencies //
+/////////////////////////////
+*/
+require('dotenv').load(); // Loads in .env variables
 var ghScrape = require("gh-scrape"),
     CronJob = require('cron').CronJob,
     twilio = require('twilio'),
-    program = require('commander');
+    email   = require('emailjs');
 
-// Pull env variables
-var account_sid = process.env.ACCOUNT_SID,
-    auth_token = process.env.AUTH_TOKEN,
-    twilio_number = process.env.TWILIO_NUM;
+/*
+//////////////////////////////
+// Initialize Env Variables //
+//////////////////////////////
+*/
+var account_sid = process.env.ACCOUNT_SID, //Twilio ACCOUNT_SID
+    auth_token = process.env.AUTH_TOKEN, //Twilio AUTH_TOKEN 
+    twilio_number = process.env.TWILIO_NUM, //Twilio number
+    username = process.env.USERNAME, //Github User you want to query for
+    number = process.env.NUMBER, //Phone number you want to text
+    email_account = process.env.EMAIL_ACCOUNT_NAME, //Email Address you want to recieve errors at
+    email_password = process.env.EMAIL_PASSWORD, //Email Password
+    host = process.env.HOST, //Email STMP server name
+    ssl = process.env.SSL, //SSL encryption T:F
+    TIME = process.env.TIME; //When you want to recieve your SMS(s)
 
-var client = new twilio.RestClient(account_sid, auth_token);
+/*
+//////////////////////////////////////////////
+// Initialize Twilio Client && Email Server //
+//////////////////////////////////////////////
+*/
+var client = new twilio.RestClient(account_sid, auth_token),
+    emailServer  = email.server.connect({
+       user:     email_account,
+       password: email_password, 
+       host:     host, 
+       ssl:      ssl
+    });
 
-// Pull cli args
-program
-  .version('0.0.1')
-  .option('-n, --number [12345..]', 'recieveing phone number')
-  .option('-u, --username [exp: Shikkic]', 'Github username')
-  .parse(process.argv); 
-
-// Create Cron Job
-var job = new CronJob('00 00 21 * * 0-6', function() {
-    ghScrape.scrape("https://github.com/"+program.username, function(userStats) {
-        var currentStreak = userStats.currentStreak,
+/*
+//////////////////
+// Run Cron Job //
+//////////////////
+*/
+var job = new CronJob(TIME, function() {
+    // Scape github user's stats, and return userStats
+    ghScrape.scrape("https://github.com/"+username, function(userStats) {
+        var parseInt(currentStreak) = userStats.currentStreak,
             longestStreak = userStats.longestStreak;
         var textBody = currentStreak ? "Awesome job today your current streak is "+currentStreak+". Keep up the good work, make some more commits! Beat your record of "+longestStreak : "Oh no! You're current streak today is 0, make a commit today you lazy shit! Your highest streak record is only "+longestStreak;
+        //Client Sends SMS
         client.sms.messages.create({
-            to: program.number,
+            to: number,
             from: twilio_number,
             body: textBody 
         }, function(error, message) {
@@ -35,9 +61,25 @@ var job = new CronJob('00 00 21 * * 0-6', function() {
                 console.log('Message sent on:');
                 console.log(message.dateCreated);
             } else {
-                console.log('Oops! There was an error.');
                 console.log(error);
+                sendErrorEmail(JSON.stringify(error));
             }
         });
     });
 }, null, true, 'America/New_York');
+
+/*
+////////////////////////////
+// Functions Declarations //
+////////////////////////////
+*/
+function sendErrorEmail(error) {
+    emailServer.send({
+       text:    error, 
+       from:    "shikkic@gmail.com", 
+       to:      "shikkic@gmail.com",
+       subject: "hackerTracker9000 fatal error"
+    }, function(err, message) {
+        console.log(err || message); 
+    });
+}

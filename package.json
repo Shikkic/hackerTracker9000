@@ -9,8 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "commander": "^2.9.0",
     "cron": "^1.0.9",
+    "dotenv": "^1.2.0",
+    "emailjs": "^1.0.0",
     "gh-scrape": "^1.0.3",
     "twilio": "^2.5.1"
   }
