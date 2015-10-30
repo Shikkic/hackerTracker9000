@@ -76,8 +76,8 @@ var job = new CronJob(TIME, function() {
 function sendErrorEmail(error) {
     emailServer.send({
        text:    error, 
-       from:    "shikkic@gmail.com", 
-       to:      "shikkic@gmail.com",
+       from:    email_account, 
+       to:      email_account,
        subject: "hackerTracker9000 fatal error"
     }, function(err, message) {
         console.log(err || message); 
