@@ -53,6 +53,7 @@ var job = new CronJob(TIME, function() {
         //Client Sends SMS
         sendSMS(textBody);
     });
+// TODO Make Time/Zone a env variale
 }, null, true, 'America/New_York');
 
 /*
@@ -60,7 +61,6 @@ var job = new CronJob(TIME, function() {
 // Functions Declarations //
 ////////////////////////////
 */
-
 function sendSMS(messageString) {
     client.sms.messages.create({
         to: number,
@@ -80,7 +80,7 @@ function sendSMS(messageString) {
 };
 
 function sendErrorEmail(error) {
-    if (process.enable_error_emails) {
+    if (enable_error_emails) {
         emailServer.send({
            text:    error, 
            from:    email_account, 
