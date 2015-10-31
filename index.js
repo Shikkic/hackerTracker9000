@@ -19,6 +19,7 @@ var account_sid = process.env.ACCOUNT_SID, //Twilio ACCOUNT_SID
     twilio_number = process.env.TWILIO_NUM, //Twilio number
     username = process.env.USERNAME, //Github User you want to query for
     number = process.env.NUMBER, //Phone number you want to text
+    enable_error_emails = process.env.ENABLE_ERROR_EMAILS, //Enables Error Email Logging
     email_account = process.env.EMAIL_ACCOUNT_NAME, //Email Address you want to recieve errors at
     email_password = process.env.EMAIL_PASSWORD, //Email Password
     host = process.env.HOST, //Email STMP server name
@@ -79,12 +80,14 @@ function sendSMS(messageString) {
 };
 
 function sendErrorEmail(error) {
-    emailServer.send({
-       text:    error, 
-       from:    email_account, 
-       to:      email_account,
-       subject: "hackerTracker9000 fatal error"
-    }, function(err, message) {
-        console.log(err || message); 
-    });
+    if (process.enable_error_emails) {
+        emailServer.send({
+           text:    error, 
+           from:    email_account, 
+           to:      email_account,
+           subject: "hackerTracker9000 fatal error has occurred"
+        }, function(err, message) {
+            console.log(err || message); 
+        });
+    }
 }
