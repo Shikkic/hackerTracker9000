@@ -4,7 +4,7 @@
 /////////////////////////////
 */
 require('dotenv').load(); // Loads in .env variables
-var ghScrape = require("gh-scrape"),
+var ghScrape = require("gh-scrape"), // Github stat scraping module
     CronJob = require('cron').CronJob,
     twilio = require('twilio'),
     email   = require('emailjs');
@@ -15,7 +15,7 @@ var ghScrape = require("gh-scrape"),
 //////////////////////////////
 */
 var account_sid = process.env.ACCOUNT_SID, //Twilio ACCOUNT_SID
-    auth_token = process.env.AUTH_TOKEN, //Twilio AUTH_TOKEN 
+    auth_token = process.env.AUTH_TOKEN, //Twilio AUTH_TOKEN
     twilio_number = process.env.TWILIO_NUM, //Twilio number
     username = process.env.USERNAME, //Github User you want to query for
     number = process.env.NUMBER, //Phone number you want to text
@@ -50,21 +50,7 @@ var job = new CronJob(TIME, function() {
             longestStreak = userStats.longestStreak;
         var textBody = currentStreak ? "Awesome job today your current streak is "+currentStreak+". Keep up the good work, make some more commits! Beat your record of "+longestStreak : "Oh no! You're current streak today is 0, make a commit today you lazy shit! Your highest streak record is only "+longestStreak;
         //Client Sends SMS
-        client.sms.messages.create({
-            to: number,
-            from: twilio_number,
-            body: textBody 
-        }, function(error, message) {
-            if (!error) {
-                console.log('Success! The SID for this SMS message is:');
-                console.log(message.sid);
-                console.log('Message sent on:');
-                console.log(message.dateCreated);
-            } else {
-                console.log(error);
-                sendErrorEmail(JSON.stringify(error));
-            }
-        });
+        sendSMS(textBody);
     });
 }, null, true, 'America/New_York');
 
@@ -73,6 +59,25 @@ var job = new CronJob(TIME, function() {
 // Functions Declarations //
 ////////////////////////////
 */
+
+function sendSMS(messageString) {
+    client.sms.messages.create({
+        to: number,
+        from: twilio_number,
+        body: messageString
+    }, function(error, message) {
+        if (!error) {
+            console.log('Success! The SID for this SMS message is:');
+            console.log(message.sid);
+            console.log('Message sent on:');
+            console.log(message.dateCreated);
+        } else {
+            console.log(error);
+            sendErrorEmail(JSON.stringify(error));
+        }
+    });
+};
+
 function sendErrorEmail(error) {
     emailServer.send({
        text:    error, 
