@@ -45,13 +45,10 @@ var client = new twilio.RestClient(account_sid, auth_token),
 //////////////////
 */
 var job = new CronJob(TIME, function() {
-    // Scape github user's stats, and return userStats
+    // Scape github user's stats, and return userStats object
     ghScrape.scrape("https://github.com/"+username, function(userStats) {
-        var currentStreak = parseInt(userStats.currentStreak),
-            longestStreak = userStats.longestStreak;
-        var textBody = currentStreak ? "Awesome job today your current streak is "+currentStreak+". Keep up the good work, make some more commits! Beat your record of "+longestStreak : "Oh no! You're current streak today is 0, make a commit today you lazy shit! Your highest streak record is only "+longestStreak+" :< ";
-        //Client Sends SMS
-        sendSMS(textBody);
+        var messageText = createMessage(userStats);
+        sendSMS(messageText);
     });
 // TODO Make Time/Zone a env variale
 }, null, true, 'America/New_York');
@@ -80,6 +77,7 @@ function sendSMS(messageString) {
 };
 
 function sendErrorEmail(error) {
+    // Only send email if error emails are enabled
     if (enable_error_emails) {
         emailServer.send({
            text:    error, 
@@ -90,4 +88,14 @@ function sendErrorEmail(error) {
             console.log(err || message); 
         });
     }
-}
+};
+
+function createMessage(UserStats) {
+    // Retrieve User's current streak and their longest streak
+    var currentStreak = parseInt(userStats.currentStreak),
+        longestStreak = userStats.longestStreak;
+    // Create simple message
+    var textBody = currentStreak ? "Awesome job today your current streak is "+currentStreak+". Keep up the good work, make some more commits! Beat your record of "+longestStreak : "Oh no! You're current streak today is 0, make a commit today you lazy shit! Your highest streak record is only "+longestStreak+" :< ";
+
+    return textBody;
+};
