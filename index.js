@@ -7,7 +7,8 @@ require('dotenv').load(); // Loads in .env variables
 var ghScrape = require("gh-scrape"), // Github stat scraping module
     CronJob = require('cron').CronJob,
     twilio = require('twilio'),
-    email   = require('emailjs');
+    email   = require('emailjs'),
+    later = require('later');
 
 /*
 //////////////////////////////
@@ -44,6 +45,8 @@ var client = new twilio.RestClient(account_sid, auth_token),
 // Run Cron Job //
 //////////////////
 */
+// TODO log when it will be sending!
+console.log("Sending SMS to "+number+" at "+Date(JSON.stringify(later.parse.cron(TIME)))+"!");
 var job = new CronJob(TIME, function() {
     // gh-scrape module: Scapes github user's stats and return userStats object
     ghScrape.scrape("https://github.com/"+username, function(userStats) {
