@@ -14,5 +14,9 @@
     "emailjs": "^1.0.0",
     "gh-scrape": "^1.0.3",
     "twilio": "^2.5.1"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-util": "^3.0.7"
   }
 }
