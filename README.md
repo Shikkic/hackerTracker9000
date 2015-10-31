@@ -13,36 +13,53 @@ If you use github for work or private repos your work and commits are often unse
 ---
 ## How to use
 
+What you'll need to get started!
+  - Twilio API Credentials
+    - Twilio Phone Number
+    - Twilio Credits
+
 Clone the repo
+
 `$ git clone https://github.com/Shikkic/hackerTracker9000`
 
 Navigate to the root folder
+
 `$ cd hackerTracker9000`
 
-Create an .env file
-`$ touch .env`
+Download dependencies
 
-Fill out the .env with appropriate information
+`$ npm install`
+
+#### IMPORTANT
+
+Run `$ gulp build` it will automatically ignore your .env file locally.
+
+> NEVER UPLOAD YOUR .ENV PUBLICLY, EVER
+
+Now you just need to fill out the .env with appropriate information
 ```sh
 # Twilio Credentials
-ACCOUNT_SID=''
-AUTH_TOKEN=''
-TWILIO_NUM=''
-# Github User
-USERNAME=''
-# Phone number to SMS (Make sure number starts with +1)
-NUMBER=''
-# Email Credentials
-EMAIL_ACCOUNT_NAME=''
-EMAIL_PASSWORD=''
-HOST=''
-SSL=''
+ACCOUNT_SID='<TWILIO_ACCOUNT_SID>'
+AUTH_TOKEN='<TWILIO_AUTH_TOKEN>'
+TWILIO_NUM='<TWILIO_NUMBER>' 
+
+# Github User You want to track
+USERNAME='<GITHUB_USERNAME>'
+
+# Phone number recieving SMS notifcations
+NUMBER='<RECIEVING_PHONE_NUMBER>'
+
+# Email Credentials for error handling
+ENABLE_ERROR_EMAILS="<true or false">
+EMAIL_ACCOUNT_NAME='<EMAIL_ADDRESS>'
+EMAIL_PASSWORD='<EMAIL_PASSWORD>'
+HOST='<HOST_NAME>' # exp: smtp.gmail.com
+SSL='<true or false>'
+
 # Time you want to recieve texts
-TIME='00 00 21 * * 0-6'
+TIME='00 21 0 * * 0-6' #default is everyday at 8pm
 ```
 
-Run the file and you should be done!
-`$ node index.js`
+Run `$ gulp run` and you're all set!
 
-> Protip: If you want this to run continously, it's highly recommend you deploy it to a VM or service where it can run as a background process instead of running it on you local machine.
-
+> Protip: If you want this to run continuously, it's highly recommended you deploy it to a VM or service where it can run as a background process instead of running it on your local machine. I will put up a tutorial later if you'd like to do learn how to do that.
