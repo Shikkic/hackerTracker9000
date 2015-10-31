@@ -54,7 +54,7 @@ ENABLE_ERROR_EMAILS="<true or false">
 EMAIL_ACCOUNT_NAME='<EMAIL_ADDRESS>'
 EMAIL_PASSWORD='<EMAIL_PASSWORD>'
 HOST='<HOST_NAME>' # exp: smtp.gmail.com
-SSL='<ENABLE_SSL>'
+SSL='<true or false>'
 
 # Time you want to recieve texts
 TIME='00 21 0 * * 0-6' #default is everyday at 8pm
