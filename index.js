@@ -48,7 +48,7 @@ var job = new CronJob(TIME, function() {
     ghScrape.scrape("https://github.com/"+username, function(userStats) {
         var currentStreak = parseInt(userStats.currentStreak),
             longestStreak = userStats.longestStreak;
-        var textBody = currentStreak ? "Awesome job today your current streak is "+currentStreak+". Keep up the good work, make some more commits! Beat your record of "+longestStreak : "Oh no! You're current streak today is 0, make a commit today you lazy shit! Your highest streak record is only "+longestStreak;
+        var textBody = currentStreak ? "Awesome job today your current streak is "+currentStreak+". Keep up the good work, make some more commits! Beat your record of "+longestStreak : "Oh no! You're current streak today is 0, make a commit today you lazy shit! Your highest streak record is only "+longestStreak+" :< ";
         //Client Sends SMS
         sendSMS(textBody);
     });
