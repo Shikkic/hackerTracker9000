@@ -45,9 +45,11 @@ var client = new twilio.RestClient(account_sid, auth_token),
 //////////////////
 */
 var job = new CronJob(TIME, function() {
-    // Scape github user's stats, and return userStats object
+    // gh-scrape module: Scapes github user's stats and return userStats object
     ghScrape.scrape("https://github.com/"+username, function(userStats) {
+        // generate message for user
         var messageText = createMessage(userStats);
+        // send SMS
         sendSMS(messageText);
     });
 // TODO Make Time/Zone a env variale
