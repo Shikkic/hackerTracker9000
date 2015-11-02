@@ -8,7 +8,8 @@ var ghScrape = require("gh-scrape"), // Github stat scraping module
     CronJob = require('cron').CronJob,
     twilio = require('twilio'),
     email   = require('emailjs'),
-    later = require('later');
+    later = require('later'),
+    _ = require('underscore');
 
 /*
 //////////////////////////////
@@ -49,7 +50,7 @@ var client = new twilio.RestClient(account_sid, auth_token),
 console.log("Sending SMS to "+number+" at "+Date(JSON.stringify(later.parse.cron(TIME)))+"!");
 var job = new CronJob(TIME, function() {
     // gh-scrape module: Scapes github user's stats and return userStats object
-    ghScrape.scrape("https://github.com/"+username, function(userStats) {
+    ghScrape.scrapeCommits("https://github.com/"+username, function(userStats) {
         // generate message for user
         var messageText = createMessage(userStats);
         // send SMS
@@ -97,10 +98,12 @@ function sendErrorEmail(error) {
 
 function createMessage(UserStats) {
     // Retrieve User's current streak and their longest streak
-    var currentStreak = parseInt(userStats.currentStreak),
-        longestStreak = userStats.longestStreak;
+    //var currentStreak = parseInt(userStats.currentStreak),
+        //longestStreak = userStats.longestStreak;
+    var currentNumCommits = _.last(UserStats)
+    currentNumCommits = currentNumCommits.commits;
     // Create simple message
-    var textBody = currentStreak ? "Awesome job today your current streak is "+currentStreak+". Keep up the good work, make some more commits! Beat your record of "+longestStreak : "Oh no! You're current streak today is 0, make a commit today you lazy shit! Your highest streak record is only "+longestStreak+" :< ";
+    var textBody = currentNumCommits ? "Awesome job today you made " + currentNumCommits + " commits. Keep up the good work, make some more commits!" : "Oh no! You made zero commits, make a commit today you lazy shit!";
 
     return textBody;
 };
