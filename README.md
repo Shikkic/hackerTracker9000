@@ -4,6 +4,8 @@ A small SMS tool to remind you to make more commits on your public github projec
 
 If you use github for work or private repos your work and commits are often unseen and undocumented once you leave the repo. So this tool helps to remind you to keep working on your public projects to keep your github profile looking sharp!
 
+![Imgur](http://i.imgur.com/MQTKvPT.png)
+
 #### Private + Public Contributions 
 ![Github](http://i.imgur.com/HTV11P0.png)
 

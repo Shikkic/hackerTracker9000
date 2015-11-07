@@ -50,18 +50,18 @@ var client = new twilio.RestClient(account_sid, auth_token),
 console.log("Sending SMS to "+number+" at "+Date(JSON.stringify(later.parse.cron(TIME)))+"!");
 var job = new CronJob(TIME, function() {
     // gh-scrape module: Scapes github user's stats and return userStats object
-    ghScrape.scrapeCommits("https://github.com/"+username, function(userStats) {
-        // generate message for user
-        var messageText = createMessage(userStats);
-        // send SMS
+    ghScrape.scrapeCommits("https://github.com/"+username, function(userCommits) {
         try {
-            sendSMS(messageText);
+            // generate message for user
+            var messageText = createMessage(userStats);
         }
         catch(e) {
             // Having an issue where the gh-scrape module returns undefined
             // Want to be notified if this error for now
             sendErrorEmail(e);
         }
+        // send SMS
+        sendSMS(messageText);
     });
 // TODO Make Time/Zone a env variale
 }, null, true, 'America/New_York');
@@ -103,14 +103,28 @@ function sendErrorEmail(error) {
     }
 };
 
-function createMessage(UserStats) {
+function createMessage(userCommits, userStreak) {
     // Retrieve User's current streak and their longest streak
     //var currentStreak = parseInt(userStats.currentStreak),
         //longestStreak = userStats.longestStreak;
-    var currentNumCommits = _.last(UserStats)
+    var currentNumCommits = _.last(userCommits)
     currentNumCommits = currentNumCommits.commits;
-    // Create simple message
-    var textBody = currentNumCommits ? "Awesome job today you made " + currentNumCommits + " commits. Keep up the good work, make some more commits!" : "Oh no! You made zero commits, make a commit today you lazy shit!";
+    var currentStreak = userStreak.currentStreak;
+    var average = averageCommits(userCommits); 
+    var textBody = parseInt(currentNumCommits) ? "Awesome job today making " + currentNumCommits +" commits, Current streak is "+currentStreak+"! You're "+(parseInt(currentStreak) / 100)*(100)+"% of the way to 100 days! You made "+average+"% more than your average commits!" : "Oh no! You made zero commits, make a commit today you lazy shit!";
 
     return textBody;
+};
+
+function averageCommits(userCommits) {
+    var currentNumCommits = _.last(userCommits);
+    currentNumCommits = currentNumCommits.commits;
+    var userCommits = _.last(userCommits, 30);
+    var totalNumCommits = 0;
+    for (var i in userCommits) {
+        totalNumCommits += parseInt(userCommits[i].commits);
+    }
+    var totalAverage = (totalNumCommits / userCommits.length)
+
+    return ((currentNumCommits/totalAverage)*100).toFixed(2);
 };
