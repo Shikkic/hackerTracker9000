@@ -54,7 +54,14 @@ var job = new CronJob(TIME, function() {
         // generate message for user
         var messageText = createMessage(userStats);
         // send SMS
-        sendSMS(messageText);
+        try {
+            sendSMS(messageText);
+        }
+        catch(e) {
+            // Having an issue where the gh-scrape module returns undefined
+            // Want to be notified if this error for now
+            sendErrorEmail(e);
+        }
     });
 // TODO Make Time/Zone a env variale
 }, null, true, 'America/New_York');
