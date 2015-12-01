@@ -12,7 +12,7 @@
     "cron": "^1.0.9",
     "dotenv": "^1.2.0",
     "emailjs": "^1.0.0",
-    "gh-scrape": "^1.0.3",
+    "gh-scrape": "^1.0.6",
     "later": "^1.2.0",
     "twilio": "^2.5.1",
     "underscore": "^1.8.3"

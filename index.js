@@ -47,21 +47,31 @@ var client = new twilio.RestClient(account_sid, auth_token),
 //////////////////
 */
 // TODO log when it will be sending!
-console.log("Sending SMS to "+number+" at "+Date(JSON.stringify(later.parse.cron(TIME)))+"!");
+//
 var job = new CronJob(TIME, function() {
-    // gh-scrape module: Scapes github user's stats and return userStats object
-    ghScrape.scrapeCommits("https://github.com/"+username, function(userCommits) {
-        try {
+    // gh-scrape module: scapes github user's stats and return userstats object
+    ghScrape.scrapeContributionData("https://github.com/"+username, function(contributionData) {
+        ghScrape.scrapeContributionStats("https://github.com/"+username, function(contributionStats) {
             // generate message for user
-            var messageText = createMessage(userStats);
+            var messageText = createMessage(contributionData, contributionStats);
+            // send SMS
+            sendSMS(messageText);
+        });
+    });
+// TODO Make Time/Zone a env variale
+}, null, true, 'America/New_York');
+
+var job2 = new CronJob('00 00 23 * * 0-6', function() {
+    // gh-scrape module: scapes github user's stats and return userstats object
+    ghScrape.scrapeContributionData("https://github.com/"+username, function(contributionData) {
+        var currentNumCommits = _.last(contributionData)
+        currentNumCommits = currentNumCommits.dataContributionCount;
+        if (!currentNumCommits) {
+            console.log("Not sending anything");
+        } else {
+            var messageText = "It's the eleventh hour and you haven't made a commit today! Hurry!"
+            sendSMS(messageText);
         }
-        catch(e) {
-            // Having an issue where the gh-scrape module returns undefined
-            // Want to be notified if this error for now
-            sendErrorEmail(e);
-        }
-        // send SMS
-        sendSMS(messageText);
     });
 // TODO Make Time/Zone a env variale
 }, null, true, 'America/New_York');
@@ -103,26 +113,24 @@ function sendErrorEmail(error) {
     }
 };
 
-function createMessage(userCommits, userStreak) {
-    // Retrieve User's current streak and their longest streak
-    //var currentStreak = parseInt(userStats.currentStreak),
-        //longestStreak = userStats.longestStreak;
-    var currentNumCommits = _.last(userCommits)
-    currentNumCommits = currentNumCommits.commits;
-    var currentStreak = userStreak.currentStreak;
-    var average = averageCommits(userCommits); 
+function createMessage(userContributionData, userStats) {
+    var currentNumCommits = _.last(userContributionData)
+    currentNumCommits = currentNumCommits.dataContributionCount;
+    var currentStreak = userStats.currentStreak;
+    var average = averageCommits(userContributionData); 
     var textBody = parseInt(currentNumCommits) ? "Awesome job today making " + currentNumCommits +" commits, Current streak is "+currentStreak+"! You're "+(parseInt(currentStreak) / 100)*(100)+"% of the way to 100 days! You made "+average+"% more than your average commits!" : "Oh no! You made zero commits, make a commit today you lazy shit!";
 
     return textBody;
 };
 
-function averageCommits(userCommits) {
-    var currentNumCommits = _.last(userCommits);
-    currentNumCommits = currentNumCommits.commits;
-    var userCommits = _.last(userCommits, 30);
+function averageCommits(userContributionData) {
+    var currentNumCommits = _.last(userContributionData);
+    currentNumCommits = currentNumCommits.dataContributionCount;
+    var userCommits = _.last(userContributionData, 30);
+    // TODO update to use map
     var totalNumCommits = 0;
     for (var i in userCommits) {
-        totalNumCommits += parseInt(userCommits[i].commits);
+        totalNumCommits += parseInt(userCommits[i].dataContributionCount);
     }
     var totalAverage = (totalNumCommits / userCommits.length)
 
