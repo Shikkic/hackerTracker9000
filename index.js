@@ -1,3 +1,6 @@
+// TODO user strict
+// rewrite for es6
+
 /*
 /////////////////////////////
 // Initialize Dependencies //
@@ -113,6 +116,7 @@ function sendErrorEmail(error) {
     }
 };
 
+// TODO CLEAN THIS UP
 function createMessage(userContributionData, userStats) {
     var currentNumCommits = _.last(userContributionData)
     currentNumCommits = currentNumCommits.dataContributionCount;
@@ -123,6 +127,7 @@ function createMessage(userContributionData, userStats) {
     return textBody;
 };
 
+// TODO CLEAN THIS UP
 function averageCommits(userContributionData) {
     var currentNumCommits = _.last(userContributionData);
     currentNumCommits = currentNumCommits.dataContributionCount;
