@@ -6,8 +6,8 @@
 // Initialize Dependencies //
 /////////////////////////////
 */
-require('dotenv').load(); // Loads in .env variables
-var ghScrape = require("gh-scrape"), // Github stat scraping module
+require('dotenv').load(); // Loads in .env letiables
+let ghScrape = require("gh-scrape"), // Github stat scraping module
     CronJob = require('cron').CronJob,
     twilio = require('twilio'),
     email   = require('emailjs'),
@@ -16,10 +16,10 @@ var ghScrape = require("gh-scrape"), // Github stat scraping module
 
 /*
 //////////////////////////////
-// Initialize Env Variables //
+// Initialize Env letiables //
 //////////////////////////////
 */
-var account_sid = process.env.ACCOUNT_SID, //Twilio ACCOUNT_SID
+let account_sid = process.env.ACCOUNT_SID, //Twilio ACCOUNT_SID
     auth_token = process.env.AUTH_TOKEN, //Twilio AUTH_TOKEN
     twilio_number = process.env.TWILIO_NUM, //Twilio number
     username = process.env.USERNAME, //Github User you want to query for
@@ -36,7 +36,7 @@ var account_sid = process.env.ACCOUNT_SID, //Twilio ACCOUNT_SID
 // Initialize Twilio Client && Email Server //
 //////////////////////////////////////////////
 */
-var client = new twilio.RestClient(account_sid, auth_token),
+let client = new twilio.RestClient(account_sid, auth_token),
     emailServer  = email.server.connect({
        user:     email_account,
        password: email_password, 
@@ -51,32 +51,32 @@ var client = new twilio.RestClient(account_sid, auth_token),
 */
 // TODO log when it will be sending!
 //
-var job = new CronJob(TIME, function() {
+let job = new CronJob(TIME, function() {
     // gh-scrape module: scapes github user's stats and return userstats object
     ghScrape.scrapeContributionData("https://github.com/"+username, function(contributionData) {
         ghScrape.scrapeContributionStats("https://github.com/"+username, function(contributionStats) {
             // generate message for user
-            var messageText = createMessage(contributionData, contributionStats);
+            let messageText = createMessage(contributionData, contributionStats);
             // send SMS
             sendSMS(messageText);
         });
     });
-// TODO Make Time/Zone a env variale
+// TODO Make Time/Zone a env letiale
 }, null, true, 'America/New_York');
 
-var job2 = new CronJob('00 00 23 * * 0-6', function() {
+let job2 = new CronJob('00 00 23 * * 0-6', function() {
     // gh-scrape module: scapes github user's stats and return userstats object
     ghScrape.scrapeContributionData("https://github.com/"+username, function(contributionData) {
-        var currentNumCommits = _.last(contributionData)
+        let currentNumCommits = _.last(contributionData)
         currentNumCommits = currentNumCommits.dataContributionCount;
         if (!currentNumCommits) {
             console.log("Not sending anything");
         } else {
-            var messageText = "It's the eleventh hour and you haven't made a commit today! Hurry!"
+            let messageText = "It's the eleventh hour and you haven't made a commit today! Hurry!"
             sendSMS(messageText);
         }
     });
-// TODO Make Time/Zone a env variale
+// TODO Make Time/Zone a env letiale
 }, null, true, 'America/New_York');
 
 /*
@@ -118,26 +118,26 @@ function sendErrorEmail(error) {
 
 // TODO CLEAN THIS UP
 function createMessage(userContributionData, userStats) {
-    var currentNumCommits = _.last(userContributionData)
+    let currentNumCommits = _.last(userContributionData)
     currentNumCommits = currentNumCommits.dataContributionCount;
-    var currentStreak = userStats.currentStreak;
-    var average = averageCommits(userContributionData); 
-    var textBody = parseInt(currentNumCommits) ? "Awesome job today making " + currentNumCommits +" commits, Current streak is "+currentStreak+"! You're "+(parseInt(currentStreak) / 100)*(100)+"% of the way to 100 days! You made "+average+"% more than your average commits!" : "Oh no! You made zero commits, make a commit today you lazy shit!";
+    let currentStreak = userStats.currentStreak;
+    let average = averageCommits(userContributionData); 
+    let textBody = parseInt(currentNumCommits) ? "Awesome job today making " + currentNumCommits +" commits, Current streak is "+currentStreak+"! You're "+(parseInt(currentStreak) / 100)*(100)+"% of the way to 100 days! You made "+average+"% more than your average commits!" : "Oh no! You made zero commits, make a commit today you lazy shit!";
 
     return textBody;
 };
 
 // TODO CLEAN THIS UP
 function averageCommits(userContributionData) {
-    var currentNumCommits = _.last(userContributionData);
+    let currentNumCommits = _.last(userContributionData);
     currentNumCommits = currentNumCommits.dataContributionCount;
-    var userCommits = _.last(userContributionData, 30);
+    let userCommits = _.last(userContributionData, 30);
     // TODO update to use map
-    var totalNumCommits = 0;
+    let totalNumCommits = 0;
     for (var i in userCommits) {
         totalNumCommits += parseInt(userCommits[i].dataContributionCount);
     }
-    var totalAverage = (totalNumCommits / userCommits.length)
+    let totalAverage = (totalNumCommits / userCommits.length)
 
     return ((currentNumCommits/totalAverage)*100).toFixed(2);
 };
